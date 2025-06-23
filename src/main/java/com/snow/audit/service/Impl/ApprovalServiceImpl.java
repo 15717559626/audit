@@ -166,8 +166,8 @@ public class ApprovalServiceImpl extends ServiceImpl<ApprovalMapper, Approval> i
     }
 
     @Override
-    public byte[] exportApprovalRecords() {
-        List<ApprovalRecordVO> records = getApprovalRecords(null);
+    public byte[] exportApprovalRecords(ApprovalRecordParam approvalRecordParam) {
+        List<ApprovalRecordVO> records = getApprovalRecords(approvalRecordParam);
 
         StringBuilder content = new StringBuilder();
         content.append("审批ID,请假ID,审批人ID,审批人姓名,审批结果,审批意见,审批时间,创建时间\n");

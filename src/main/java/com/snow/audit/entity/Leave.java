@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -61,4 +62,7 @@ public class Leave {
 
     @ApiModelProperty(value = "更新时间", required = true)
     private LocalDateTime updateTime;
+
+    @ApiModelProperty(value = "附件图片url")
+    private String attachmentUrl;
 }

@@ -24,4 +24,5 @@ public class LeaveDetailVO {
     private String approverName;
     private String approveTime;
     private String approveComment;
+    private String attachmentUrl;
 }
