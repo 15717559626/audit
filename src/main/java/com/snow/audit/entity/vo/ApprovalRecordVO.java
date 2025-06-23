@@ -1,6 +1,5 @@
 package com.snow.audit.entity.vo;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data

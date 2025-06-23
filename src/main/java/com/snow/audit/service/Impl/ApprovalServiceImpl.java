@@ -1,33 +1,29 @@
 package com.snow.audit.service.Impl;
 
-import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.snow.audit.common.ApiException;
+import com.snow.audit.common.CustomStyleHandler;
 import com.snow.audit.entity.Approval;
-import com.snow.audit.entity.ApprovalConfig;
 import com.snow.audit.entity.ApprovalRecord;
+import com.snow.audit.entity.BuUserEntity;
 import com.snow.audit.entity.Leave;
-import com.snow.audit.entity.param.ApprovalConfigParam;
 import com.snow.audit.entity.param.ApprovalProcessParam;
 import com.snow.audit.entity.param.ApprovalRecordParam;
-import com.snow.audit.entity.param.ApprovalStepParam;
 import com.snow.audit.entity.vo.*;
 import com.snow.audit.mapper.ApprovalMapper;
-import com.snow.audit.service.ApprovalConfigService;
-import com.snow.audit.service.ApprovalRecordService;
-import com.snow.audit.service.ApprovalService;
-import com.snow.audit.service.LeaveService;
+import com.snow.audit.service.*;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.charset.StandardCharsets;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,6 +39,9 @@ public class ApprovalServiceImpl extends ServiceImpl<ApprovalMapper, Approval> i
 
     @Autowired
     private ApprovalRecordService approvalRecordService;
+
+    @Autowired
+    private IBuUserService userService;
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -99,6 +98,7 @@ public class ApprovalServiceImpl extends ServiceImpl<ApprovalMapper, Approval> i
         detail.setDays(leave.getDays());
         detail.setReason(leave.getReason());
         detail.setApplyTime(leave.getCreateTime().format(DATE_TIME_FORMATTER));
+        detail.setDepartment(leave.getDepartment());
 
         // 审批流程记录
         List<ApprovalStepVO> stepList = records.stream()
@@ -166,24 +166,29 @@ public class ApprovalServiceImpl extends ServiceImpl<ApprovalMapper, Approval> i
     }
 
     @Override
-    public byte[] exportApprovalRecords() {
-        List<ApprovalRecordVO> records = getApprovalRecords(null);
+    public byte[] exportApprovalRecords(ApprovalRecordParam approvalRecordParam) {
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 
-        StringBuilder content = new StringBuilder();
-        content.append("审批ID,请假ID,审批人ID,审批人姓名,审批结果,审批意见,审批时间,创建时间\n");
+            // 根据参数获取数据
+            List<ApprovalRecordVO> records = getApprovalRecords(approvalRecordParam);
 
-        for (ApprovalRecordVO record : records) {
-            content.append(record.getId()).append(",")
-                    .append(record.getLeaveId()).append(",")
-                    .append(record.getApproverId()).append(",")
-                    .append(record.getApproverName()).append(",")
-                    .append(record.getResult()).append(",")
-                    .append(record.getComment() != null ? record.getComment() : "").append(",")
-                    .append(record.getApproveTime()).append(",")
-                    .append(record.getCreateTime()).append("\n");
+            // 转换为导出VO
+            List<ApprovalRecordExportVO> exportData = records.stream()
+                    .map(ApprovalRecordExportVO::new)
+                    .collect(Collectors.toList());
+
+            // 自定义样式写入Excel
+            EasyExcel.write(outputStream, ApprovalRecordExportVO.class)
+                    //.head(createCustomHead()) // 可选：自定义表头
+                    .registerWriteHandler(new CustomStyleHandler()) // 可选：自定义样式
+                    .sheet("审批记录")
+                    .doWrite(exportData);
+
+            return outputStream.toByteArray();
+
+        } catch (IOException e) {
+            throw new RuntimeException("导出Excel失败", e);
         }
-
-        return content.toString().getBytes(StandardCharsets.UTF_8);
     }
 
     @Override
@@ -361,4 +366,5 @@ public class ApprovalServiceImpl extends ServiceImpl<ApprovalMapper, Approval> i
         vo.setCreateTime(record.getCreateTime().format(DATE_TIME_FORMATTER));
         return vo;
     }
+
 }

@@ -40,4 +40,11 @@ public class LeaveApplyParam {
     @NotBlank(message = "请假原因不能为空")
     @Length(max = 500, message = "请假原因不能超过500字")
     private String reason;
+
+    @ApiModelProperty(value = "附件URL")
+    private String attachmentUrl;
+
+    @ApiModelProperty(value = "部门")
+    private String department;
+
 }

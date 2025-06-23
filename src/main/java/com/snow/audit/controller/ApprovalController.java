@@ -56,6 +56,11 @@ public class ApprovalController {
         return Result.success(approvalRecords);
     }
 
+    @PostMapping("/export")
+    public Result<byte[]> exportApproval(@RequestBody ApprovalRecordParam approvalRecordParam) {
+        return Result.success(approvalService.exportApprovalRecords(approvalRecordParam));
+    }
+
     // 获取审批流配置
     @GetMapping("/config")
     public Result<ApprovalConfigVO> getApprovalConfig() {

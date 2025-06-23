@@ -24,6 +24,7 @@ public class ApprovalDetailVO {
     // 请假申请信息
     private Long applicantId;
     private String applicantName;
+    private String department;
     private LocalDate startDate;
     private LocalDate endDate;
     private String leaveType;

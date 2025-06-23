@@ -24,5 +24,5 @@ public interface ApprovalService extends IService<Approval> {
 
     void cancelApprovalProcess(Long id);
 
-    byte[] exportApprovalRecords();
+    byte[] exportApprovalRecords(ApprovalRecordParam approvalRecordParam);
 }

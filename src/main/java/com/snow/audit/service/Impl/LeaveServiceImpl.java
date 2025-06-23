@@ -57,6 +57,8 @@ public class LeaveServiceImpl extends ServiceImpl<LeaveMapper, Leave> implements
         leave.setStatus("submitted"); // 改为submitted，等待进入审批流程
         leave.setCreateTime(LocalDateTime.now());
         leave.setUpdateTime(LocalDateTime.now());
+        leave.setAttachmentUrl(param.getAttachmentUrl());
+        leave.setDepartment(param.getDepartment());
 
         // 4. 保存到数据库
         boolean saveResult = save(leave);
@@ -293,10 +295,7 @@ public class LeaveServiceImpl extends ServiceImpl<LeaveMapper, Leave> implements
 
         while (!current.isAfter(endDate)) {
             // 排除周末（可根据业务需求调整）
-            if (current.getDayOfWeek() != DayOfWeek.SATURDAY &&
-                    current.getDayOfWeek() != DayOfWeek.SUNDAY) {
-                days++;
-            }
+            days++;
             current = current.plusDays(1);
         }
 
@@ -341,6 +340,7 @@ public class LeaveServiceImpl extends ServiceImpl<LeaveMapper, Leave> implements
         vo.setStatus(leave.getStatus());
         vo.setStatusName(getStatusName(leave.getStatus()));
         vo.setApplyTime(leave.getCreateTime().format(DATE_TIME_FORMATTER));
+        vo.setAttachmentUrl(leave.getAttachmentUrl());
         //获取审批人信息
         if (leave.getApproverId() == null){
             approvalService.lambdaQuery()

@@ -25,7 +25,7 @@ public interface IBuUserService extends IService<BuUserEntity> {
     WxLoginVO getWxLoginVO(String openid);
 
     /**
-     * 根据openId获取用户信息
+     * 根据审批下拉用户
      */
     List<AuditUserVO> getAuditUserList();
 
