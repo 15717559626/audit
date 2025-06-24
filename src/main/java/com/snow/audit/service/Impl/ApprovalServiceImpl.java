@@ -97,7 +97,7 @@ public class ApprovalServiceImpl extends ServiceImpl<ApprovalMapper, Approval> i
         detail.setLeaveTypeName(leave.getLeaveTypeName());
         detail.setDays(leave.getDays());
         detail.setReason(leave.getReason());
-        detail.setApplyTime(leave.getCreateTime().format(DATE_TIME_FORMATTER));
+        detail.setApplyTime(leave.getCreateTime());
         detail.setDepartment(leave.getDepartment());
 
         // 审批流程记录
@@ -319,17 +319,19 @@ public class ApprovalServiceImpl extends ServiceImpl<ApprovalMapper, Approval> i
         vo.setStatus(approval.getStatus());
         vo.setCurrentStep(approval.getCurrentStep());
         vo.setTotalSteps(approval.getTotalSteps());
-        vo.setCreateTime(approval.getCreateTime().format(DATE_TIME_FORMATTER));
+        vo.setCreateTime(approval.getCreateTime());
 
         // 获取请假详情
         Leave leave = leaveService.getById(approval.getLeaveId());
         if (leave != null) {
             vo.setApplicantName(leave.getApplicantName());
+            vo.setDepartment(leave.getDepartment());
             vo.setLeaveTypeName(leave.getLeaveTypeName());
             vo.setStartDate(leave.getStartDate());
             vo.setEndDate(leave.getEndDate());
             vo.setDays(leave.getDays());
             vo.setReason(leave.getReason());
+            vo.setApplyTime(leave.getCreateTime());
         }
 
         return vo;
@@ -345,8 +347,7 @@ public class ApprovalServiceImpl extends ServiceImpl<ApprovalMapper, Approval> i
         vo.setApproverName(record.getApproverName());
         vo.setResult(record.getResult());
         vo.setComment(record.getComment());
-        vo.setApproveTime(record.getApproveTime() != null ?
-                record.getApproveTime().format(DATE_TIME_FORMATTER) : null);
+        vo.setApproveTime( record.getApproveTime());
         return vo;
     }
 
@@ -361,8 +362,7 @@ public class ApprovalServiceImpl extends ServiceImpl<ApprovalMapper, Approval> i
         vo.setApproverName(record.getApproverName());
         vo.setResult(record.getResult());
         vo.setComment(record.getComment());
-        vo.setApproveTime(record.getApproveTime() != null ?
-                record.getApproveTime().format(DATE_TIME_FORMATTER) : null);
+        vo.setApproveTime( record.getApproveTime());
         vo.setCreateTime(record.getCreateTime().format(DATE_TIME_FORMATTER));
         return vo;
     }

@@ -2,6 +2,8 @@ package com.snow.audit.entity.vo;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class ApprovalRecordVO {
 
@@ -11,7 +13,7 @@ public class ApprovalRecordVO {
     private String approverName;
     private String result;
     private String comment;
-    private String approveTime;
+    private LocalDateTime approveTime;
     private String createTime;
 
     private String applicantId;
@@ -21,7 +23,7 @@ public class ApprovalRecordVO {
     private String leaveTypeName;
     private String status;
     private String statusName;
-    private String applyTime;
+    private LocalDateTime applyTime;
     private String days;
 
 

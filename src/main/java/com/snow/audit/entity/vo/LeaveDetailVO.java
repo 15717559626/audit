@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 public class LeaveDetailVO {
@@ -15,14 +16,14 @@ public class LeaveDetailVO {
     private LocalDate endDate;
     private String leaveType;
     private String leaveTypeName;
-    private Integer days;
+    private String days;
     private String reason;
     private String status;
     private String statusName;
-    private String applyTime;
+    private LocalDateTime applyTime;
     private Long approverId;
     private String approverName;
-    private String approveTime;
+    private LocalDateTime approveTime;
     private String approveComment;
     private String attachmentUrl;
     private String department;

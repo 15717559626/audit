@@ -42,7 +42,7 @@ public class LeaveServiceImpl extends ServiceImpl<LeaveMapper, Leave> implements
         validateLeaveApplication(param);
 
         // 2. 计算请假天数
-        int days = calculateLeaveDays(param.getStartDate(), param.getEndDate());
+        //int days = calculateLeaveDays(param.getStartDate(), param.getEndDate());
 
         // 3. 构建请假记录
         Leave leave = new Leave();
@@ -52,7 +52,7 @@ public class LeaveServiceImpl extends ServiceImpl<LeaveMapper, Leave> implements
         leave.setEndDate(param.getEndDate());
         leave.setLeaveType(param.getLeaveType());
         leave.setLeaveTypeName(param.getLeaveTypeName());
-        leave.setDays(days);
+        leave.setDays(param.getDuration());
         leave.setReason(param.getReason());
         leave.setStatus("submitted"); // 改为submitted，等待进入审批流程
         leave.setCreateTime(LocalDateTime.now());
@@ -207,9 +207,9 @@ public class LeaveServiceImpl extends ServiceImpl<LeaveMapper, Leave> implements
             LeaveStatisticsVO stat = new LeaveStatisticsVO();
             stat.setLeaveType(entry.getKey());
             stat.setLeaveTypeName(entry.getValue().get(0).getLeaveTypeName());
-            stat.setTotalDays(entry.getValue().stream()
+            /*stat.setTotalDays(entry.getValue().stream()
                     .mapToInt(Leave::getDays)
-                    .sum());
+                    .sum());*/
             stat.setTotalCount(entry.getValue().size());
             statistics.add(stat);
         }
@@ -252,10 +252,10 @@ public class LeaveServiceImpl extends ServiceImpl<LeaveMapper, Leave> implements
         }
 
         // 请假天数限制（可根据业务需求调整）
-        int days = calculateLeaveDays(param.getStartDate(), param.getEndDate());
+        /*int days = calculateLeaveDays(param.getStartDate(), param.getEndDate());
         if (days > 30) {
             throw new ApiException("单次请假不能超过30天");
-        }
+        }*/
 
         // 检查是否有重叠的请假申请
         checkOverlappingLeave(param);
@@ -289,17 +289,10 @@ public class LeaveServiceImpl extends ServiceImpl<LeaveMapper, Leave> implements
     /**
      * 计算请假天数（工作日）
      */
-    private int calculateLeaveDays(LocalDate startDate, LocalDate endDate) {
-        int days = 0;
-        LocalDate current = startDate;
-
-        while (!current.isAfter(endDate)) {
-            // 排除周末（可根据业务需求调整）
-            days++;
-            current = current.plusDays(1);
-        }
-
-        return Math.max(days, 1); // 至少1天
+    private String calculateLeaveDays(LocalDate startDate, LocalDate endDate, String leaveType) {
+        //1.如果是直落类型的话请假天数显示0
+        //2.
+        return "";
     }
 
     /**
@@ -318,7 +311,7 @@ public class LeaveServiceImpl extends ServiceImpl<LeaveMapper, Leave> implements
         vo.setReason(leave.getReason());
         vo.setStatus(leave.getStatus());
         vo.setStatusName(getStatusName(leave.getStatus()));
-        vo.setApplyTime(leave.getCreateTime().format(DATE_TIME_FORMATTER));
+        vo.setApplyTime(leave.getCreateTime());
         vo.setApproverName(leave.getApproverName());
         return vo;
     }
@@ -339,7 +332,7 @@ public class LeaveServiceImpl extends ServiceImpl<LeaveMapper, Leave> implements
         vo.setReason(leave.getReason());
         vo.setStatus(leave.getStatus());
         vo.setStatusName(getStatusName(leave.getStatus()));
-        vo.setApplyTime(leave.getCreateTime().format(DATE_TIME_FORMATTER));
+        vo.setApplyTime(leave.getCreateTime());
         vo.setAttachmentUrl(leave.getAttachmentUrl());
         //获取审批人信息
         if (leave.getApproverId() == null){
@@ -347,14 +340,12 @@ public class LeaveServiceImpl extends ServiceImpl<LeaveMapper, Leave> implements
                     .eq(Approval::getLeaveId, leave.getId()).oneOpt().ifPresent(approval -> {
                         vo.setApproverId(approval.getCurrentApproverId());
                         vo.setApproverName(approval.getCurrentApproverName());
-                        vo.setApproveTime(approval.getUpdateTime() != null ?
-                                approval.getUpdateTime().format(DATE_TIME_FORMATTER) : null);
+                        vo.setApproveTime( approval.getUpdateTime());
                     });
         }else{
             vo.setApproverId(leave.getApproverId());
             vo.setApproverName(leave.getApproverName());
-            vo.setApproveTime(leave.getApproveTime() != null ?
-                    leave.getApproveTime().format(DATE_TIME_FORMATTER) : null);
+            vo.setApproveTime( leave.getApproveTime());
         }
         vo.setApproveComment(leave.getApproveComment());
         return vo;

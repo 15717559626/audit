@@ -37,7 +37,7 @@ public class Leave {
     private String leaveTypeName;
 
     @ApiModelProperty(value = "请假天数", required = true)
-    private Integer days;
+    private String days;
 
     @ApiModelProperty(value = "请假原因", required = true, notes = "长度不超过500")
     private String reason;

@@ -3,6 +3,7 @@ package com.snow.audit.entity.vo;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.format.DateTimeFormat;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
+import com.snow.audit.entity.enums.ApprovalStatus;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -20,8 +21,9 @@ public class ApprovalRecordExportVO {
     private String applicantName;
 
     @ExcelProperty(value = "请假时间", index = 1)
-    @ColumnWidth(12)
-    private String applyTime;
+    @ColumnWidth(20)
+    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime applyTime;
 
     @ExcelProperty(value = "请假时长", index = 2)
     @ColumnWidth(12)
@@ -40,19 +42,19 @@ public class ApprovalRecordExportVO {
     private String comment;
 
     @ExcelProperty(value = "审批时间", index = 6)
-    //@DateTimeFormat("yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
     @ColumnWidth(20)
-    private String approveTime;
+    private LocalDateTime approveTime;
 
 
     // 构造函数 - 从原VO转换
     public ApprovalRecordExportVO(ApprovalRecordVO vo) {
-        this.applicantName = vo.getApplicantName();
+        this.applicantName = vo.getApplicantName() != null ? vo.getApplicantName() : "";
         this.applyTime = vo.getApplyTime();
-        this.days = vo.getDays();
-        this.approverName = vo.getApproverName();
-        this.result = vo.getResult();
-        this.comment = vo.getComment();
+        this.days = vo.getDays() != null ? vo.getDays() : "";
+        this.approverName = vo.getApproverName() != null ? vo.getApproverName() : "";
+        this.result = ApprovalStatus.fromCode(vo.getResult());
+        this.comment = vo.getComment() != null ? vo.getComment() : "";
         this.approveTime = vo.getApproveTime();
     }
 

@@ -47,4 +47,7 @@ public class LeaveApplyParam {
     @ApiModelProperty(value = "部门")
     private String department;
 
+    @NotBlank(message = "请假天数")
+    private String duration;
+
 }

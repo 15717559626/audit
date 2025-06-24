@@ -3,6 +3,7 @@ package com.snow.audit.entity.vo;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -29,9 +30,9 @@ public class ApprovalDetailVO {
     private LocalDate endDate;
     private String leaveType;
     private String leaveTypeName;
-    private Integer days;
+    private String days;
     private String reason;
-    private String applyTime;
+    private LocalDateTime applyTime;
 
     // 审批流程信息
     private List<ApprovalStepVO> approvalSteps;

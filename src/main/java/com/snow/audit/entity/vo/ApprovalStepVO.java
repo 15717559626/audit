@@ -3,6 +3,7 @@ package com.snow.audit.entity.vo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -24,5 +25,5 @@ public class ApprovalStepVO {
     private String approverName;
     private String result;
     private String comment;
-    private String approveTime;
+    private LocalDateTime approveTime;
 }
