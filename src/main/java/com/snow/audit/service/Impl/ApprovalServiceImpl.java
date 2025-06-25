@@ -6,8 +6,9 @@ import com.snow.audit.common.ApiException;
 import com.snow.audit.common.CustomStyleHandler;
 import com.snow.audit.entity.Approval;
 import com.snow.audit.entity.ApprovalRecord;
-import com.snow.audit.entity.BuUserEntity;
 import com.snow.audit.entity.Leave;
+import com.snow.audit.entity.enums.ApprovalStatusEnum;
+import com.snow.audit.entity.enums.LeaveStatusEnum;
 import com.snow.audit.entity.param.ApprovalProcessParam;
 import com.snow.audit.entity.param.ApprovalRecordParam;
 import com.snow.audit.entity.vo.*;
@@ -22,10 +23,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.snow.audit.entity.enums.ApprovalStatusEnum.APPROVING;
 
 @Service
 @Transactional
@@ -122,7 +123,7 @@ public class ApprovalServiceImpl extends ServiceImpl<ApprovalMapper, Approval> i
         }
 
         // 3. 状态检查
-        if (!"pending".equals(approval.getStatus())) {
+        if (!ApprovalStatusEnum.APPROVING.getCode().equals(approval.getStatus())) {
             throw new ApiException("该申请已处理，无法重复审批");
         }
 
@@ -144,10 +145,10 @@ public class ApprovalServiceImpl extends ServiceImpl<ApprovalMapper, Approval> i
         approvalRecordService.save(record);
 
         // 6. 处理审批结果
-        if ("rejected".equals(param.getStatus())) {
+        if (ApprovalStatusEnum.REJECTED.getCode().equals(param.getStatus())) {
             // 拒绝：直接结束流程
             return handleApprovalRejection(approval, param);
-        } else if ("approved".equals(param.getStatus())) {
+        } else if (ApprovalStatusEnum.APPROVED.getCode().equals(param.getStatus())) {
             // 通过：检查是否还有下一步
             return handleApprovalApprove(approval, param);
         } else {
@@ -162,7 +163,10 @@ public class ApprovalServiceImpl extends ServiceImpl<ApprovalMapper, Approval> i
 
     @Override
     public void cancelApprovalProcess(Long id) {
-
+        //删除审批记录表中的记录
+        approvalRecordService.lambdaUpdate().eq(ApprovalRecord::getLeaveId, id).remove();
+        //删除审批表中的记录
+        this.lambdaUpdate().eq(Approval::getLeaveId, id).remove();
     }
 
     @Override
@@ -210,7 +214,7 @@ public class ApprovalServiceImpl extends ServiceImpl<ApprovalMapper, Approval> i
         Approval approval = new Approval();
         approval.setLeaveId(leaveId);
         approval.setType("leave"); // 请假类型
-        approval.setStatus("pending");
+        approval.setStatus(ApprovalStatusEnum.APPROVING.getCode());
         approval.setCurrentStep(1);
         approval.setTotalSteps(config.getSteps().size());
         approval.setCurrentApproverId(config.getSteps().get(0).getApprovers().get(0).getId());
@@ -222,7 +226,7 @@ public class ApprovalServiceImpl extends ServiceImpl<ApprovalMapper, Approval> i
         this.save(approval);
 
         // 5. 更新请假申请状态
-        leave.setStatus("approving");
+        leave.setStatus(LeaveStatusEnum.APPROVING.getCode());
         leave.setUpdateTime(LocalDateTime.now());
         leaveService.updateById(leave);
 

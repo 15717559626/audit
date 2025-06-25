@@ -3,6 +3,7 @@ package com.snow.audit.entity.param;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * @Author lish
@@ -14,8 +15,8 @@ public class LeaveListParam {
     private Long applicantId;
     private Long approverId;
     private String status;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
     private Integer pageNum = 1;
     private Integer pageSize = 10;
 }

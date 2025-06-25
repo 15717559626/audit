@@ -25,10 +25,10 @@ public class Leave {
     private String applicantName;
 
     @ApiModelProperty(value = "开始日期", required = true)
-    private LocalDate startDate;
+    private LocalDateTime startDate;
 
     @ApiModelProperty(value = "结束日期", required = true)
-    private LocalDate endDate;
+    private LocalDateTime endDate;
 
     @ApiModelProperty(value = "请假类型", required = true)
     private String leaveType;

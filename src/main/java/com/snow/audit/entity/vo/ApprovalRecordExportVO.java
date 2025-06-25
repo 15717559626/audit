@@ -3,7 +3,8 @@ package com.snow.audit.entity.vo;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.format.DateTimeFormat;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
-import com.snow.audit.entity.enums.ApprovalStatus;
+import com.snow.audit.entity.enums.ApprovalStatusEnum;
+import com.snow.audit.entity.enums.LeaveStatusEnum;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -53,7 +54,7 @@ public class ApprovalRecordExportVO {
         this.applyTime = vo.getApplyTime();
         this.days = vo.getDays() != null ? vo.getDays() : "";
         this.approverName = vo.getApproverName() != null ? vo.getApproverName() : "";
-        this.result = ApprovalStatus.fromCode(vo.getResult());
+        this.result = ApprovalStatusEnum.fromCode(vo.getResult());
         this.comment = vo.getComment() != null ? vo.getComment() : "";
         this.approveTime = vo.getApproveTime();
     }

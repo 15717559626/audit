@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.snow.audit.common.ApiException;
 import com.snow.audit.entity.Approval;
 import com.snow.audit.entity.Leave;
+import com.snow.audit.entity.enums.LeaveStatusEnum;
 import com.snow.audit.entity.param.LeaveApplyParam;
 import com.snow.audit.entity.param.LeaveListParam;
 import com.snow.audit.entity.vo.LeaveDetailVO;
@@ -19,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -54,7 +54,7 @@ public class LeaveServiceImpl extends ServiceImpl<LeaveMapper, Leave> implements
         leave.setLeaveTypeName(param.getLeaveTypeName());
         leave.setDays(param.getDuration());
         leave.setReason(param.getReason());
-        leave.setStatus("submitted"); // 改为submitted，等待进入审批流程
+        leave.setStatus(LeaveStatusEnum.SUBMITTED.getCode()); // 改为submitted，等待进入审批流程
         leave.setCreateTime(LocalDateTime.now());
         leave.setUpdateTime(LocalDateTime.now());
         leave.setAttachmentUrl(param.getAttachmentUrl());
@@ -247,9 +247,9 @@ public class LeaveServiceImpl extends ServiceImpl<LeaveMapper, Leave> implements
         }
 
         // 不能申请过去的日期（当天可以申请）
-        if (param.getStartDate().isBefore(LocalDate.now())) {
+        /*if (param.getStartDate().isBefore(LocalDateTime.now())) {
             throw new ApiException("不能申请过去的日期");
-        }
+        }*/
 
         // 请假天数限制（可根据业务需求调整）
         /*int days = calculateLeaveDays(param.getStartDate(), param.getEndDate());
@@ -310,7 +310,7 @@ public class LeaveServiceImpl extends ServiceImpl<LeaveMapper, Leave> implements
         vo.setDays(leave.getDays());
         vo.setReason(leave.getReason());
         vo.setStatus(leave.getStatus());
-        vo.setStatusName(getStatusName(leave.getStatus()));
+        vo.setStatusName(LeaveStatusEnum.fromCode(leave.getStatus()));
         vo.setApplyTime(leave.getCreateTime());
         vo.setApproverName(leave.getApproverName());
         return vo;
@@ -331,7 +331,7 @@ public class LeaveServiceImpl extends ServiceImpl<LeaveMapper, Leave> implements
         vo.setDays(leave.getDays());
         vo.setReason(leave.getReason());
         vo.setStatus(leave.getStatus());
-        vo.setStatusName(getStatusName(leave.getStatus()));
+        vo.setStatusName(LeaveStatusEnum.fromCode(leave.getStatus()));
         vo.setApplyTime(leave.getCreateTime());
         vo.setAttachmentUrl(leave.getAttachmentUrl());
         //获取审批人信息
@@ -351,17 +351,4 @@ public class LeaveServiceImpl extends ServiceImpl<LeaveMapper, Leave> implements
         return vo;
     }
 
-    /**
-     * 获取状态显示名称
-     */
-    private String getStatusName(String status) {
-        switch (status) {
-            case "submitted": return "已提交";
-            case "approving": return "审批中";
-            case "approved": return "已通过";
-            case "rejected": return "已拒绝";
-            case "cancelled": return "已撤销";
-            default: return "未知状态";
-        }
-    }
 }

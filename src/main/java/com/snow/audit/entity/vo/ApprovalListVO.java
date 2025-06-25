@@ -1,5 +1,6 @@
 package com.snow.audit.entity.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -20,8 +21,10 @@ public class ApprovalListVO {
     private String applicantName;
     private String department;
     private String leaveTypeName;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime startDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime endDate;
     private String days;
     private String reason;
     private LocalDateTime applyTime;

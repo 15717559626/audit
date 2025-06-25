@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * @Author lish
@@ -24,12 +25,10 @@ public class LeaveApplyParam {
     private String applicantName;
 
     @NotNull(message = "开始日期不能为空")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate startDate;
+    private LocalDateTime startDate;
 
     @NotNull(message = "结束日期不能为空")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate endDate;
+    private LocalDateTime endDate;
 
     @NotBlank(message = "请假类型不能为空")
     private String leaveType;

@@ -8,24 +8,21 @@ import lombok.Getter;
  * @DESCRIBE
  */
 @Getter
-public enum ApprovalStatus {
-    SUBMITTED("submitted", "已提交"),
-    APPROVING("approving", "审批中"),
+public enum ApprovalStatusEnum {
+    APPROVING("approving", "审核中"),
     APPROVED("approved", "已通过"),
-    REJECTED("rejected", "已拒绝"),
-    CANCELLED("cancelled", "已撤销");
-
+    REJECTED("rejected", "已拒绝");
     private final String code;
     private final String description;
 
-    ApprovalStatus(String code, String description) {
+    ApprovalStatusEnum(String code, String description) {
         this.code = code;
         this.description = description;
     }
 
     // 根据code获取枚举
     public static String fromCode(String code) {
-        for (ApprovalStatus status : ApprovalStatus.values()) {
+        for (ApprovalStatusEnum status : ApprovalStatusEnum.values()) {
             if (status.code.equals(code)) {
                 return status.getDescription();
             }
