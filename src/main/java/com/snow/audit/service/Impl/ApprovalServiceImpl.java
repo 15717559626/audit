@@ -26,7 +26,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.snow.audit.entity.enums.ApprovalStatusEnum.APPROVING;
+import static com.snow.audit.common.AuditConstant.auditApplyTemplateId;
+import static com.snow.audit.common.AuditConstant.auditResultTemplateId;
 
 @Service
 @Transactional
@@ -50,7 +51,7 @@ public class ApprovalServiceImpl extends ServiceImpl<ApprovalMapper, Approval> i
     @Override
     public List<ApprovalListVO> getApprovalList(String approverId, String type) {
         // 1. 查询当前用户待审批的申请
-        return this.lambdaQuery().eq(Approval::getStatus, "pending")
+        return this.lambdaQuery().eq(Approval::getStatus, LeaveStatusEnum.APPROVING)
                 .eq(Approval::getCurrentApproverId, approverId)
                 .eq(StringUtils.isNotBlank(type), Approval::getType, type)
                 .orderByDesc(Approval::getCreateTime).list().stream()
@@ -147,10 +148,10 @@ public class ApprovalServiceImpl extends ServiceImpl<ApprovalMapper, Approval> i
         // 6. 处理审批结果
         if (ApprovalStatusEnum.REJECTED.getCode().equals(param.getStatus())) {
             // 拒绝：直接结束流程
-            return handleApprovalRejection(approval, param);
+            return handleApprovalRejection(approval, param, record);
         } else if (ApprovalStatusEnum.APPROVED.getCode().equals(param.getStatus())) {
             // 通过：检查是否还有下一步
-            return handleApprovalApprove(approval, param);
+            return handleApprovalApprove(approval, param, record);
         } else {
             throw new ApiException("无效的审批状态");
         }
@@ -230,13 +231,16 @@ public class ApprovalServiceImpl extends ServiceImpl<ApprovalMapper, Approval> i
         leave.setUpdateTime(LocalDateTime.now());
         leaveService.updateById(leave);
 
+        // 6. 发送待审批订阅消息
+        userService.sendSubscribeMessage(leave.getApplicantId(), auditApplyTemplateId, "pages/approval/detail?id=" + approval.getId(), leave);
+
         return true;
     }
 
     /**
      * 处理审批拒绝
      */
-    private boolean handleApprovalRejection(Approval approval, ApprovalProcessParam param) {
+    private boolean handleApprovalRejection(Approval approval, ApprovalProcessParam param, ApprovalRecord record) {
         // 更新审批状态
         approval.setStatus("rejected");
         approval.setUpdateTime(LocalDateTime.now());
@@ -252,13 +256,16 @@ public class ApprovalServiceImpl extends ServiceImpl<ApprovalMapper, Approval> i
         leave.setUpdateTime(LocalDateTime.now());
         leaveService.updateById(leave);
 
+        // 审批通过后发送订阅消息
+        userService.sendSubscribeMessage(leave.getApplicantId(), auditResultTemplateId, "pages/leave/detail?id=" + leave.getId(), record);
+
         return true;
     }
 
     /**
      * 处理审批通过
      */
-    private boolean handleApprovalApprove(Approval approval, ApprovalProcessParam param) {
+    private boolean handleApprovalApprove(Approval approval, ApprovalProcessParam param, ApprovalRecord record) {
         // 检查是否是最后一步
         if (approval.getCurrentStep().equals(approval.getTotalSteps())) {
             // 最后一步，审批完成
@@ -275,6 +282,9 @@ public class ApprovalServiceImpl extends ServiceImpl<ApprovalMapper, Approval> i
             leave.setApproveComment(param.getComment());
             leave.setUpdateTime(LocalDateTime.now());
             leaveService.updateById(leave);
+
+            // 审批通过后发送订阅消息
+            userService.sendSubscribeMessage(leave.getApplicantId(), auditResultTemplateId, "pages/leave/detail?id=", record);
         } else {
             // 进入下一步审批
             ApprovalConfigVO config = approvalConfigService.getApprovalConfig();

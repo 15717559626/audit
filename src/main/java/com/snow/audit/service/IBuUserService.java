@@ -1,7 +1,10 @@
 package com.snow.audit.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.snow.audit.entity.Approval;
+import com.snow.audit.entity.ApprovalRecord;
 import com.snow.audit.entity.BuUserEntity;
+import com.snow.audit.entity.Leave;
 import com.snow.audit.entity.vo.AuditUserVO;
 import com.snow.audit.entity.vo.WxLoginVO;
 
@@ -28,5 +31,15 @@ public interface IBuUserService extends IService<BuUserEntity> {
      * 根据审批下拉用户
      */
     List<AuditUserVO> getAuditUserList();
+
+    /**
+     * 发送审批结果给指定用户
+     */
+    void sendSubscribeMessage(Long userId, String templateId, String page, ApprovalRecord record);
+
+    /**
+     * 发送待审批消息提醒用户
+     */
+    void sendSubscribeMessage(Long userId, String templateId, String page, Leave leave);
 
 }

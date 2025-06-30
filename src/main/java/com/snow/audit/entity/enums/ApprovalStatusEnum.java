@@ -30,6 +30,18 @@ public enum ApprovalStatusEnum {
         return "";
     }
 
+    public static String fromCodeForWxMessage(String code) {
+        for (ApprovalStatusEnum status : ApprovalStatusEnum.values()) {
+            if (APPROVED.code.equals(code)) {
+                return "审核通过";
+            }
+            if (REJECTED.code.equals(code)) {
+                return "审核失败";
+            }
+        }
+        return "";
+    }
+
     @Override
     public String toString() {
         return code + " (" + description + ")";
