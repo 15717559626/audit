@@ -18,6 +18,9 @@ import com.snow.audit.mapper.BuUserMapper;
 import com.snow.audit.service.IBuUserService;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.error.WxErrorException;
+import me.chanjar.weixin.mp.api.WxMpService;
+import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
+import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +42,9 @@ public class IBuUserServiceImpl extends ServiceImpl<BuUserMapper, BuUserEntity> 
 
     @Autowired
     private WxMaService wxMaService;
+
+    @Autowired
+    private WxMpService wxMpService;
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final DateTimeFormatter DATE_TIME_FORMATTER_SHORT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -138,6 +144,31 @@ public class IBuUserServiceImpl extends ServiceImpl<BuUserMapper, BuUserEntity> 
             wxMaService.getSubscribeService().sendSubscribeMsg(wxMssVo);
         } catch (WxErrorException e) {
             log.error("待审批消息推送失败,{}", e.getError().getErrorMsg());
+        }
+    }
+
+    @Override
+    public void sendMpTemplateMessage(Long userId, String templateId, String page, Leave leave) {
+        try {
+            BuUserEntity userEntity = this.getById(userId);
+            if (userEntity == null){
+                return;
+            }
+            WxMpTemplateMessage msg = WxMpTemplateMessage.builder()
+                    .toUser(userEntity.getMpOpenid())                               // 申请人公众号 openid
+                    .templateId(templateId)                 // 第1步的模板ID
+                    .url(page) // 点击跳小程序
+                    .build();
+
+            msg.addData(new WxMpTemplateData("first", "您好，您有待审批的请假单", "#173177"));
+            msg.addData(new WxMpTemplateData("keyword1", leave.getApplicantName()));
+            msg.addData(new WxMpTemplateData("keyword2", leave.getCreateTime().format(DATE_TIME_FORMATTER)));
+            msg.addData(new WxMpTemplateData("keyword3", leave.getReason()));
+            msg.addData(new WxMpTemplateData("keyword4", leave.getStartDate().format(DATE_TIME_FORMATTER_SHORT)));
+            msg.addData(new WxMpTemplateData("keyword5", leave.getEndDate().format(DATE_TIME_FORMATTER_SHORT)));
+            wxMpService.getTemplateMsgService().sendTemplateMsg(msg);
+        } catch (WxErrorException e) {
+            log.error("公众号模板消息发送失败: {}", e.getMessage());
         }
     }
 

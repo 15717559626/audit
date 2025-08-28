@@ -12,4 +12,7 @@ public interface AuditConstant {
 
     //待审批提示
     String auditApplyTemplateId = "LG62DnGtBJTOsqJjBctciyChF_beOOyzVRG9aECGbzs";
+
+    //待审批提示
+    String auditMpApplyTemplateId = "1DBM_D0mpZbBRrES8fhaheKzLAHN5YeuM310krD0h-0";
 }

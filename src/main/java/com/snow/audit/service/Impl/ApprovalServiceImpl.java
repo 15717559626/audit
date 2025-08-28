@@ -26,8 +26,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.snow.audit.common.AuditConstant.auditApplyTemplateId;
-import static com.snow.audit.common.AuditConstant.auditResultTemplateId;
+import static com.snow.audit.common.AuditConstant.*;
 
 @Service
 @Transactional
@@ -159,7 +158,7 @@ public class ApprovalServiceImpl extends ServiceImpl<ApprovalMapper, Approval> i
 
     @Override
     public List<ApprovalRecordVO> getApprovalRecords(ApprovalRecordParam approvalRecordParam) {
-        return approvalRecordService.getRecordsByApproverId(approvalRecordParam);
+        return approvalRecordService.getRecordsByApprovalId(approvalRecordParam);
     }
 
     @Override
@@ -198,7 +197,7 @@ public class ApprovalServiceImpl extends ServiceImpl<ApprovalMapper, Approval> i
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean startApprovalProcess(Long leaveId) {
+    public void startApprovalProcess(Long leaveId) {
         // 1. 获取请假申请
         Leave leave = leaveService.getById(leaveId);
         if (leave == null) {
@@ -232,9 +231,8 @@ public class ApprovalServiceImpl extends ServiceImpl<ApprovalMapper, Approval> i
         leaveService.updateById(leave);
 
         // 6. 发送待审批订阅消息
-        userService.sendSubscribeMessage(leave.getApplicantId(), auditApplyTemplateId, "pages/approval/detail?id=" + approval.getId(), leave);
+        userService.sendMpTemplateMessage(leave.getApplicantId(), auditMpApplyTemplateId, "pages/approval/detail?id=" + approval.getId(), leave);
 
-        return true;
     }
 
     /**

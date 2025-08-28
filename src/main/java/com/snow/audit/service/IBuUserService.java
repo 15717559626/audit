@@ -42,4 +42,9 @@ public interface IBuUserService extends IService<BuUserEntity> {
      */
     void sendSubscribeMessage(Long userId, String templateId, String page, Leave leave);
 
+    /**
+     * 服务号发送待审批消息提醒用户
+     */
+    void sendMpTemplateMessage(Long userId, String templateId, String page, Leave leave);
+
 }

@@ -39,6 +39,9 @@ public interface LeaveService extends IService<Leave> {
     boolean approveLeave(Long id, Long approverId, String approverName,
                          String status, String comment);
 
+    /**
+     * 获取请假统计
+     */
     List<LeaveStatisticsVO> getLeaveStatistics(String applicantId, Integer year);
 
     /**

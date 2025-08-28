@@ -134,38 +134,6 @@ public class ApprovalConfigServiceImpl extends ServiceImpl<ApprovalConfigMapper,
     }
 
     @Override
-    public List<ApproverVO> getAvailableApprovers() {
-        // 这里应该从用户表中查询，暂时返回模拟数据
-        // 实际项目中需要注入UserService来查询用户信息
-
-        List<ApproverVO> approvers = new ArrayList<>();
-
-        // 示例数据 - 实际项目中应该从数据库查询
-        ApproverVO approver1 = new ApproverVO();
-        approver1.setId(123L);
-        approver1.setName("张经理");
-        approver1.setDepartment("技术部");
-        approver1.setPosition("部门经理");
-        approvers.add(approver1);
-
-        ApproverVO approver2 = new ApproverVO();
-        approver2.setId(1234L);
-        approver2.setName("李总监");
-        approver2.setDepartment("人事部");
-        approver2.setPosition("人事总监");
-        approvers.add(approver2);
-
-        ApproverVO approver3 = new ApproverVO();
-        approver3.setId(12345L);
-        approver3.setName("王总");
-        approver3.setDepartment("管理层");
-        approver3.setPosition("总经理");
-        approvers.add(approver3);
-
-        return approvers;
-    }
-
-    @Override
     public boolean validateApprovalConfig(ApprovalConfigParam param) {
         try {
             validateApprovalConfigParam(param);

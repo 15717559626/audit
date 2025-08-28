@@ -20,6 +20,6 @@ public interface ApprovalRecordService extends IService<ApprovalRecord> {
     /**
      * 获取用户的审批记录
      */
-    List<ApprovalRecordVO> getRecordsByApproverId(ApprovalRecordParam approvalRecordParam);
+    List<ApprovalRecordVO> getRecordsByApprovalId(ApprovalRecordParam approvalRecordParam);
 }
 

@@ -23,7 +23,7 @@ public class ApprovalRecordServiceImpl extends ServiceImpl<ApprovalRecordMapper,
     }
 
     @Override
-    public List<ApprovalRecordVO> getRecordsByApproverId(ApprovalRecordParam approvalRecordParam) {
-        return baseMapper.getRecordsByApproverId(approvalRecordParam);
+    public List<ApprovalRecordVO> getRecordsByApprovalId(ApprovalRecordParam approvalRecordParam) {
+        return baseMapper.getRecordsByApprovalId(approvalRecordParam);
     }
 }

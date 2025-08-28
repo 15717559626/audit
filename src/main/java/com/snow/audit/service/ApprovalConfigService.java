@@ -17,7 +17,5 @@ public interface ApprovalConfigService extends IService<ApprovalConfig> {
 
     boolean resetApprovalConfig();
 
-    List<ApproverVO> getAvailableApprovers();
-
     boolean validateApprovalConfig(ApprovalConfigParam param);
 }

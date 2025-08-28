@@ -16,5 +16,5 @@ import java.util.List;
 @Mapper
 public interface ApprovalRecordMapper extends BaseMapper<ApprovalRecord> {
 
-    List<ApprovalRecordVO> getRecordsByApproverId(@Param("param") ApprovalRecordParam approvalRecordParam);
+    List<ApprovalRecordVO> getRecordsByApprovalId(@Param("param") ApprovalRecordParam approvalRecordParam);
 }

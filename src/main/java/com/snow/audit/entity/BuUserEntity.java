@@ -23,6 +23,10 @@ public class BuUserEntity implements Serializable {
 	@ApiModelProperty(value = "用户的OpenID")
 	private String openid;
 
+	@TableField(value = "mp_openid")
+	@ApiModelProperty(value = "用户的mpOpenID")
+	private String mpOpenid;
+
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	@ApiModelProperty(value = "首次登陆时间")
 	private LocalDateTime userFirstLoginTime;
