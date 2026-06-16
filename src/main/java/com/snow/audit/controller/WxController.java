@@ -1,6 +1,7 @@
 package com.snow.audit.controller;
 
 import com.snow.audit.common.ApiResponse;
+import com.snow.audit.common.SkipAuth;
 import com.snow.audit.entity.param.WxLoginPram;
 import com.snow.audit.entity.vo.AuditUserVO;
 import com.snow.audit.entity.vo.WxLoginVO;
@@ -13,13 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.util.List;
 
-/**
- * @Author lish
- * @Date 2025/6/17 16:38
- * @DESCRIBE
- */
 @Api(tags = "xDms接口")
 @Slf4j
+@SkipAuth
 @RestController
 @RequestMapping("/api/wx")
 public class WxController {
